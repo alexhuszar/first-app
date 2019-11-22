@@ -28,6 +28,7 @@ class _ProductEditState extends State<ProductEdit> {
         if (value.isEmpty || value.length < 5) {
           return 'Title is required and should be 5+ character long';
         }
+        return null;
       },
       onSaved: (String value) {
         _formData['title'] = value;
@@ -44,6 +45,7 @@ class _ProductEditState extends State<ProductEdit> {
         if (value.isEmpty || value.length < 10) {
           return 'Description is required and should be 15+ character long';
         }
+        return null;
       },
       onSaved: (String value) {
         _formData['description'] = value;
@@ -61,6 +63,7 @@ class _ProductEditState extends State<ProductEdit> {
             !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)) {
           return 'Price is required and should number';
         }
+        return null;
       },
       onSaved: (String value) {
         _formData['price'] = double.parse(value);
@@ -82,8 +85,8 @@ class _ProductEditState extends State<ProductEdit> {
       return RaisedButton(
         child: Text('Save'),
         textColor: Colors.white,
-        onPressed: () => _submitForm(
-            model.addProduct, model.updateProduct, model.selectedProductIndex),
+        onPressed: () => _submitForm(model.addProduct, model.updateProduct,
+            model.selectProduct, model.selectedProductIndex),
       );
     });
   }
@@ -117,7 +120,8 @@ class _ProductEditState extends State<ProductEdit> {
     );
   }
 
-  void _submitForm(Function addProduct, Function updateProduct,
+  void _submitForm(
+      Function addProduct, Function updateProduct, Function setSelectedProduct,
       [int selectedProductIndex]) {
     if (!_formKey.currentState.validate()) {
       return;
@@ -140,7 +144,8 @@ class _ProductEditState extends State<ProductEdit> {
         ),
       );
     }
-    Navigator.pushReplacementNamed(context, '/products');
+    Navigator.pushReplacementNamed(context, '/products')
+        .then((_) => setSelectedProduct(null));
   }
 
   @override
