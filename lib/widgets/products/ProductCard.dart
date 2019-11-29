@@ -32,34 +32,34 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.info),
-          iconSize: 30,
-          color: Theme.of(context).accentColor,
-          onPressed: () => Navigator.pushNamed<bool>(
-            context,
-            '/product/' + productIndex.toString(),
+    return ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model) {
+      return ButtonBar(
+        alignment: MainAxisAlignment.center,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.info),
+            iconSize: 30,
+            color: Theme.of(context).accentColor,
+            onPressed: () => Navigator.pushNamed<bool>(
+              context,
+              '/product/' + model.allProducts[productIndex].id,
+            ),
           ),
-        ),
-        ScopedModelDescendant<MainModel>(
-            builder: (BuildContext context, Widget child, MainModel model) {
-          return IconButton(
+          IconButton(
             icon: Icon(model.allProducts[productIndex].isFavorite
                 ? Icons.favorite
                 : Icons.favorite_border),
             color: Colors.red,
             iconSize: 30,
             onPressed: () {
-              model.selectProduct(productIndex);
+              model.selectProduct(model.allProducts[productIndex].id);
               model.toggleProductFavoriteStatus();
             },
-          );
-        })
-      ],
-    );
+          )
+        ],
+      );
+    });
   }
 
   @override
@@ -76,7 +76,12 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
             ),
-            child: Image.asset(product.image),
+            child: FadeInImage(
+              image: NetworkImage(product.image),
+              height: 300.0,
+              fit: BoxFit.cover,
+              placeholder: AssetImage('assets/placeholder.jpg'),
+            ),
           ),
           _buildTitle(),
           AddressTag('8624 Hawthorne Road Loganville, GA 30052'),

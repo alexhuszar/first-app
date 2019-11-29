@@ -16,7 +16,6 @@ class _ProductEditState extends State<ProductEdit> {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'assets/timeOut.jpg',
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -82,12 +81,17 @@ class _ProductEditState extends State<ProductEdit> {
       //     child: Text('My Button'),
       //   ),
       // ),
-      return RaisedButton(
-        child: Text('Save'),
-        textColor: Colors.white,
-        onPressed: () => _submitForm(model.addProduct, model.updateProduct,
-            model.selectProduct, model.selectedProductIndex),
-      );
+      return model.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : RaisedButton(
+              child: Text('Save'),
+              textColor: Colors.white,
+              onPressed: () => _submitForm(
+                  model.addProduct,
+                  model.updateProduct,
+                  model.selectProduct,
+                  model.selectedProductIndex),
+            );
     });
   }
 
@@ -127,13 +131,14 @@ class _ProductEditState extends State<ProductEdit> {
       return;
     }
     _formKey.currentState.save();
-    if (selectedProductIndex == null) {
+    if (selectedProductIndex == -1) {
       addProduct(Product(
         title: _formData['title'],
         description: _formData['description'],
         price: _formData['price'],
         image: _formData['image'],
-      ));
+      )).then((_) => Navigator.pushReplacementNamed(context, '/products')
+          .then((_) => setSelectedProduct(null)));
     } else {
       updateProduct(
         Product(
@@ -142,10 +147,9 @@ class _ProductEditState extends State<ProductEdit> {
           price: _formData['price'],
           image: _formData['image'],
         ),
-      );
+      ).then((_) => Navigator.pushReplacementNamed(context, '/products')
+          .then((_) => setSelectedProduct(null)));
     }
-    Navigator.pushReplacementNamed(context, '/products')
-        .then((_) => setSelectedProduct(null));
   }
 
   @override
@@ -154,7 +158,7 @@ class _ProductEditState extends State<ProductEdit> {
         builder: (BuildContext context, Widget child, MainModel model) {
       final Widget pageContent =
           _buildWidgetContent(context, model.selectedProduct);
-      return model.selectedProductIndex == null
+      return model.selectedProductIndex == -1
           ? pageContent
           : Scaffold(
               appBar: AppBar(

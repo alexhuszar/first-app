@@ -5,12 +5,29 @@ import '../scoped-models/main.dart';
 
 import './ProductEdit.dart';
 
-class ProductList extends StatelessWidget {
+class ProductList extends StatefulWidget {
+  final MainModel model;
+
+  ProductList(this.model);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ProductListState();
+  }
+}
+
+class _ProductListState extends State<ProductList> {
+  @override
+  initState() {
+    widget.model.fetchProducts();
+    super.initState();
+  }
+
   Widget _buildEditButton(BuildContext context, int index, MainModel model) {
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
-        model.selectProduct(index);
+        model.selectProduct(model.allProducts[index].id);
         Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) {
             return ProductEdit();
@@ -29,7 +46,7 @@ class ProductList extends StatelessWidget {
             return Dismissible(
               onDismissed: (DismissDirection direction) {
                 if (direction == DismissDirection.endToStart) {
-                  model.selectProduct(index);
+                  model.selectProduct(model.allProducts[index].id);
                   model.deleteProduct();
                 } else if (direction == DismissDirection.startToEnd) {
                   print('startToEnd');
@@ -52,7 +69,7 @@ class ProductList extends StatelessWidget {
                   ListTile(
                     leading: CircleAvatar(
                         backgroundImage:
-                            AssetImage(model.allProducts[index].image)),
+                            NetworkImage(model.allProducts[index].image)),
                     title: Text(model.allProducts[index].title),
                     subtitle:
                         Text('\$ ${model.allProducts[index].price.toString()}'),

@@ -10,9 +10,9 @@ import '../widgets/products/PriceTag.dart';
 import '../widgets/products/AddressTag.dart';
 
 class ProductPage extends StatelessWidget {
-  final int productIndex;
+  final Product product;
 
-  ProductPage(this.productIndex);
+  ProductPage(this.product);
 
   _showWarningDialog(BuildContext context) {
     showDialog(
@@ -53,49 +53,47 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        Navigator.pop(context, false);
-        return Future.value(false);
-      },
-      child: ScopedModelDescendant<MainModel>(
-        builder: (BuildContext context, Widget child, MainModel model) {
-          final Product product = model.allProducts[productIndex];
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(product.title),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  color: Colors.white,
-                  onPressed: () => _showWarningDialog(context),
-                ),
-              ],
-            ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(product.image),
-                AddressTag('8624 Hawthorne Road Loganville, GA 30052'),
-                Container(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TitleDefault(product.title),
-                      SizedBox(width: 8.0),
-                      Flexible(
-                        flex: 2,
-                        child: PriceTag(product.price.toString()),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
+        onWillPop: () {
+          Navigator.pop(context, false);
+          return Future.value(false);
         },
-      ),
-    );
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(product.title),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.delete),
+                color: Colors.white,
+                onPressed: () => _showWarningDialog(context),
+              ),
+            ],
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              FadeInImage(
+                image: NetworkImage(product.image),
+                height: 300.0,
+                fit: BoxFit.cover,
+                placeholder: AssetImage('assets/placeholder.jpg'),
+              ),
+              AddressTag('8624 Hawthorne Road Loganville, GA 30052'),
+              Container(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    TitleDefault(product.title),
+                    SizedBox(width: 8.0),
+                    Flexible(
+                      flex: 2,
+                      child: PriceTag(product.price.toString()),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
